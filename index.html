@@ -1,0 +1,158 @@
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>오늘의 마음</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: #f5f7fb;
+      color: #263247;
+      font-family: Arial, "Noto Sans KR", sans-serif;
+    }
+    main {
+      max-width: 520px;
+      margin: auto;
+      padding: 28px 20px 48px;
+    }
+    .date { color: #78869b; font-size: 14px; }
+    h1 { font-size: 30px; margin: 12px 0; }
+    .intro { color: #68758a; line-height: 1.7; }
+    .card {
+      background: white;
+      padding: 22px;
+      margin-top: 20px;
+      border-radius: 20px;
+      box-shadow: 0 4px 18px #2632470a;
+    }
+    h2 { font-size: 18px; margin: 0 0 16px; }
+    .moods { display: flex; gap: 8px; flex-wrap: wrap; }
+    .mood {
+      border: 1px solid #e1e7f0;
+      background: white;
+      padding: 12px 10px;
+      border-radius: 13px;
+      cursor: pointer;
+      color: #263247;
+    }
+    .mood.selected {
+      background: #e6efff;
+      border-color: #7fa7f5;
+    }
+    textarea {
+      width: 100%;
+      min-height: 130px;
+      padding: 14px;
+      border: 1px solid #dce3ed;
+      border-radius: 13px;
+      resize: vertical;
+      font: inherit;
+      line-height: 1.6;
+    }
+    button.save {
+      width: 100%;
+      margin-top: 14px;
+      padding: 15px;
+      border: 0;
+      border-radius: 13px;
+      background: #7299e8;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    #message { color: #4770b7; font-size: 14px; }
+  </style>
+</head>
+<body>
+  <main>
+    <p class="date" id="today"></p>
+    <h1>오늘의 마음 ☁️</h1>
+    <p class="intro">
+      공부하는 하루 속에서도<br>
+      내 마음을 돌보는 시간을 가져봐요.
+    </p>
+
+    <section class="card">
+      <h2>오늘 나는 어떤 기분인가요?</h2>
+      <div class="moods">
+        <button class="mood" data-mood="좋음">😊 좋음</button>
+        <button class="mood" data-mood="평온">😌 평온</button>
+        <button class="mood" data-mood="불안">😟 불안</button>
+        <button class="mood" data-mood="우울">😔 우울</button>
+        <button class="mood" data-mood="복잡함">😵‍💫 복잡함</button>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>지금 내 마음을 적어봐요</h2>
+      <textarea id="diary" placeholder="오늘 있었던 일, 공부하면서 든 생각, 말하지 못했던 마음까지 자유롭게 적어도 괜찮아요."></textarea>
+      <button class="save" id="save">오늘의 기록 저장하기</button>
+      <p id="message" aria-live="polite"></p>
+    </section>
+
+    <section class="card">
+      <h2>오늘 나에게 해주고 싶은 말</h2>
+      <p class="intro">완벽하지 않아도 괜찮아. 오늘의 나는 오늘만큼 노력했어.</p>
+    </section>
+  </main>
+
+  <script>
+    const today = new Date();
+    const dateKey = [
+      today.getFullYear(),
+      String(today.getMonth() + 1).padStart(2, "0"),
+      String(today.getDate()).padStart(2, "0")
+    ].join("-");
+
+    document.getElementById("today").textContent =
+      today.getFullYear() + "년 " +
+      (today.getMonth() + 1) + "월 " +
+      today.getDate() + "일";
+
+    let selectedMood = "";
+
+    document.querySelectorAll(".mood").forEach(button => {
+      button.addEventListener("click", () => {
+        selectedMood = button.dataset.mood;
+        document.querySelectorAll(".mood").forEach(item => {
+          item.classList.toggle("selected", item === button);
+        });
+      });
+    });
+
+    const diary = document.getElementById("diary");
+    const message = document.getElementById("message");
+    const storageKey = "emotion-diary-" + dateKey;
+
+    try {
+      const saved = JSON.parse(localStorage.getItem(storageKey) || "{}");
+      diary.value = saved.text || "";
+      selectedMood = saved.mood || "";
+      document.querySelectorAll(".mood").forEach(button => {
+        button.classList.toggle(
+          "selected", button.dataset.mood === selectedMood
+        );
+      });
+    } catch (error) {
+      message.textContent = "기존 기록을 불러오지 못했어요.";
+    }
+
+    document.getElementById("save").addEventListener("click", () => {
+      try {
+        localStorage.setItem(storageKey, JSON.stringify({
+          text: diary.value,
+          mood: selectedMood,
+          updatedAt: new Date().toISOString()
+        }));
+        message.textContent = "오늘의 기록을 이 브라우저에 저장했어요.";
+      } catch (error) {
+        message.textContent = "저장하지 못했어요. 브라우저 설정을 확인해 주세요.";
+      }
+    });
+  </script>
+</body>
+</html>
