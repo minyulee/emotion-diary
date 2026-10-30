@@ -1,158 +1,138 @@
-
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>오늘의 마음</title>
-  <style>
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      background: #f5f7fb;
-      color: #263247;
-      font-family: Arial, "Noto Sans KR", sans-serif;
-    }
-    main {
-      max-width: 520px;
-      margin: auto;
-      padding: 28px 20px 48px;
-    }
-    .date { color: #78869b; font-size: 14px; }
-    h1 { font-size: 30px; margin: 12px 0; }
-    .intro { color: #68758a; line-height: 1.7; }
-    .card {
-      background: white;
-      padding: 22px;
-      margin-top: 20px;
-      border-radius: 20px;
-      box-shadow: 0 4px 18px #2632470a;
-    }
-    h2 { font-size: 18px; margin: 0 0 16px; }
-    .moods { display: flex; gap: 8px; flex-wrap: wrap; }
-    .mood {
-      border: 1px solid #e1e7f0;
-      background: white;
-      padding: 12px 10px;
-      border-radius: 13px;
-      cursor: pointer;
-      color: #263247;
-    }
-    .mood.selected {
-      background: #e6efff;
-      border-color: #7fa7f5;
-    }
-    textarea {
-      width: 100%;
-      min-height: 130px;
-      padding: 14px;
-      border: 1px solid #dce3ed;
-      border-radius: 13px;
-      resize: vertical;
-      font: inherit;
-      line-height: 1.6;
-    }
-    button.save {
-      width: 100%;
-      margin-top: 14px;
-      padding: 15px;
-      border: 0;
-      border-radius: 13px;
-      background: #7299e8;
-      color: white;
-      font-size: 16px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-    #message { color: #4770b7; font-size: 14px; }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#edf4ef">
+<title>오늘의 마음 | 감정 일기</title>
+<style>
+:root{--bg:#f4f7f5;--card:#fff;--ink:#24332c;--muted:#718078;--line:#e1e9e3;--green:#4f8b6b;--soft:#e8f2eb;--rose:#b85d68}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Arial,"Noto Sans KR","Malgun Gothic",sans-serif;line-height:1.55}
+button,input,textarea{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid #a9d0b6;outline-offset:2px}
+header{position:sticky;top:0;z-index:5;background:#ffffffef;border-bottom:1px solid var(--line);backdrop-filter:blur(8px)}
+.top{max-width:1050px;margin:auto;padding:13px 16px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.brand{font-size:20px;font-weight:800}.brand span{color:var(--green)}.actions,.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+main{max-width:1050px;margin:auto;padding:24px 16px 48px}.eyebrow{color:var(--green);font-size:12px;font-weight:800;letter-spacing:.06em}
+h1{font-size:clamp(26px,5vw,36px);line-height:1.25;margin:6px 0}.sub,.muted{color:var(--muted)}.sub{margin:0 0 22px}.muted{font-size:12px}
+.layout{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(270px,.9fr);gap:16px;align-items:start}.stack{display:grid;gap:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:19px;box-shadow:0 7px 24px #2743310a;min-width:0}
+.head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:14px}h2{font-size:17px;margin:0}label.fieldlabel{display:flex;justify-content:space-between;gap:8px;font-size:14px;font-weight:750;margin-bottom:8px}
+input[type=date],input[type=search],textarea{width:100%;border:1px solid var(--line);border-radius:11px;padding:11px 12px;background:#fbfdfb;color:var(--ink)}
+textarea{min-height:140px;resize:vertical;line-height:1.7}.short{min-height:78px}.field{margin-top:17px}
+.btn{border:1px solid var(--line);background:white;color:var(--ink);padding:9px 12px;border-radius:10px;font-size:13px;font-weight:700}
+.btn.primary{background:var(--green);border-color:var(--green);color:white}.btn.soft{background:var(--soft);color:#356b4e}.btn.danger{color:var(--rose)}
+.moods{display:flex;flex-wrap:wrap;gap:7px}.mood{border:1px solid var(--line);background:#fff;padding:8px 10px;border-radius:999px;font-size:13px}
+.mood[aria-pressed=true]{background:var(--soft);border-color:var(--green);box-shadow:inset 0 0 0 1px var(--green)}
+.question{background:#f2f8f3;border:1px solid #dfede2;border-radius:12px;padding:13px;margin-bottom:9px}.cat{font-size:12px;font-weight:800;color:#356b4e;margin-bottom:5px}
+.savebar{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-top:16px}.status{font-size:12px;color:#356b4e}
+.month{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}.monthname{font-weight:800}
+.calendar{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}.weekday{text-align:center;font-size:11px;color:var(--muted);padding:5px 0}
+.day{position:relative;min-height:38px;border:1px solid transparent;border-radius:9px;background:#f8faf8;font-size:12px;color:var(--ink);padding:4px 0}
+.day.empty{background:transparent}.day.today{border-color:#a9cdb4;font-weight:800}.day.selected{background:var(--green);color:white}.day.entry:after{content:"";position:absolute;bottom:3px;left:50%;transform:translateX(-50%);width:4px;height:4px;border-radius:50%;background:var(--green)}.day.selected.entry:after{background:white}
+.results{display:grid;gap:8px;margin-top:10px}.result{width:100%;text-align:left;border:1px solid var(--line);background:#fbfdfb;border-radius:10px;padding:10px}.result strong,.result span{display:block}.result strong{font-size:13px}.result span{font-size:12px;color:var(--muted);overflow-wrap:anywhere}
+.privacy{border:1px dashed #d5e1d8;border-radius:12px;padding:12px;color:var(--muted);font-size:12px;line-height:1.6}
+.toast{position:fixed;bottom:16px;left:50%;transform:translate(-50%,20px);opacity:0;pointer-events:none;background:#25372d;color:white;padding:11px 16px;border-radius:11px;z-index:20;font-size:13px;transition:.2s}.toast.show{opacity:1;transform:translate(-50%,0)}
+footer{text-align:center;color:var(--muted);font-size:12px;margin-top:22px}
+@media(max-width:760px){.layout{grid-template-columns:1fr}main{padding:18px 11px 36px}.card{padding:15px}.top{align-items:flex-start}.day{min-height:35px}}
+</style>
 </head>
 <body>
-  <main>
-    <p class="date" id="today"></p>
-    <h1>오늘의 마음 ☁️</h1>
-    <p class="intro">
-      공부하는 하루 속에서도<br>
-      내 마음을 돌보는 시간을 가져봐요.
-    </p>
+<header><div class="top"><div class="brand">🌿 오늘의 <span>마음</span></div><div class="actions"><span id="cloudStatus" class="muted">클라우드 연결 확인 중…</span><button class="btn" id="logoutBtn" hidden>로그아웃</button><button class="btn" id="exportBtn">백업 내보내기</button><label class="btn" for="importFile">백업 불러오기</label><input id="importFile" type="file" accept=".json,application/json" hidden></div></div></header>
+<section id="authCard" class="card" style="max-width:460px;margin:24px auto;padding:22px;display:none">
+<h2>🔐 TO-DO LIST와 같은 계정으로 로그인</h2>
+<p class="muted">기존 TO-DO LIST에서 사용하는 이메일과 비밀번호를 입력하세요. 같은 계정으로 로그인하면 할 일과 감정 일기가 기기 간 동기화됩니다.</p>
+<label class="fieldlabel" for="authEmail">이메일</label><input id="authEmail" type="email" autocomplete="username" style="width:100%;border:1px solid var(--line);border-radius:10px;padding:11px;margin-bottom:12px">
+<label class="fieldlabel" for="authPassword">비밀번호</label><input id="authPassword" type="password" autocomplete="current-password" style="width:100%;border:1px solid var(--line);border-radius:10px;padding:11px;margin-bottom:12px">
+<div class="row"><button class="btn primary" id="loginBtn">로그인</button><button class="btn" id="registerBtn">새 계정 만들기</button></div><p id="authError" style="color:#b85d68;font-size:13px"></p>
+</section>
+<main id="diaryMain" style="display:none">
+<div class="eyebrow">MY DAILY REFLECTION</div><h1>오늘의 마음을 기록해요.</h1><p class="sub">잘 정리해서 쓰지 않아도 괜찮아요. 지금 느끼는 마음 그대로 적어보세요.</p>
+<div class="layout">
+<div class="stack">
+<section class="card">
+<div class="head"><h2>🗓️ 기록할 날짜</h2><button class="btn soft" id="todayBtn">오늘로 이동</button></div>
+<div class="row"><input style="flex:1;min-width:150px" type="date" id="journalDate"><button class="btn" id="clearBtn">입력 내용 비우기</button></div>
+<div class="field"><label class="fieldlabel"><span>오늘 나는 어떤 기분인가요?</span><button class="btn" id="resetMoodsBtn">감정 초기화</button></label><div class="moods" id="moodGrid"></div><p class="muted">여러 감정을 함께 선택해도 돼요.</p></div>
+<div class="field"><label class="fieldlabel" for="journalContent"><span>📝 오늘의 기록</span><span class="muted" id="charCount">0자</span></label><textarea id="journalContent" placeholder="오늘 있었던 일, 공부하면서 든 생각, 말하지 못했던 마음까지 자유롭게 적어보세요."></textarea></div>
+<div class="field"><div class="head"><h2>✅ 오늘의 TO-DO LIST</h2><span class="muted" id="todoSyncStatus">로그인 후 불러옵니다</span></div><div id="todoList" class="results"><div class="muted">TO-DO LIST와 연결 중…</div></div><p class="muted">기존 TO-DO LIST의 선택한 날짜 할 일을 자동으로 보여줘요. 할 일 수정은 TO-DO LIST에서 해주세요.</p></div>
+<div class="field"><label class="fieldlabel" for="studyContent">📚 오늘의 공부 기록 (선택)</label><textarea class="short" id="studyContent" placeholder="예: 영어 단어 40개, 독해 2지문, 공부하면서 어려웠던 점"></textarea><p class="muted">위 목록은 기존 TO-DO LIST에서 자동으로 불러오며, 이 칸에는 추가 메모를 적을 수 있어요.</p></div>
+<div class="field"><div class="head"><h2>🌿 오늘의 질문</h2><button class="btn soft" id="drawBtn">다른 질문 뽑기</button></div><div class="question"><div class="cat" id="questionCategory">마음 돌아보기</div><div id="questionText">질문을 뽑아 오늘의 마음을 천천히 살펴보세요.</div></div><label class="fieldlabel" for="questionAnswer">나의 답변</label><textarea class="short" id="questionAnswer" placeholder="한 문장만 적어도 괜찮아요."></textarea></div>
+<div class="savebar"><span class="status" id="status" aria-live="polite">이 브라우저에 자동 저장돼요.</span><div class="row"><button class="btn danger" id="deleteBtn">이 날짜 삭제</button><button class="btn primary" id="saveBtn">기록 저장하기</button></div></div>
+</section>
+<div class="privacy">🔒 <strong>기록 저장 안내</strong><br>로그인하면 감정 일기가 Firebase 클라우드에 저장되어 같은 계정으로 로그인한 휴대폰과 컴퓨터에서 동기화됩니다. 중요한 기록은 ‘백업 내보내기’로도 보관하세요. 민감한 일기는 공용 기기에서 작성하지 않는 것이 좋아요.</div>
+</div>
+<aside class="stack">
+<section class="card"><div class="head"><h2>📅 감정 달력</h2></div><div class="month"><button class="btn" id="prevMonth" aria-label="이전 달">‹</button><div class="monthname" id="monthTitle"></div><button class="btn" id="nextMonth" aria-label="다음 달">›</button></div><div class="calendar" id="calendar"><div class="weekday">일</div><div class="weekday">월</div><div class="weekday">화</div><div class="weekday">수</div><div class="weekday">목</div><div class="weekday">금</div><div class="weekday">토</div></div><p class="muted">점이 있는 날짜에는 기록이 있어요. 날짜를 누르면 기록을 열 수 있어요.</p></section>
+<section class="card"><div class="head"><h2>🔎 지난 기록 찾기</h2></div><input type="search" id="searchInput" placeholder="일기, 감정, 공부 기록 검색"><div class="results" id="searchResults"><div class="muted">검색어를 입력하면 저장된 기록을 찾아줘요.</div></div></section>
+<section class="card"><h2>💚 나에게 해주고 싶은 말</h2><p class="sub" style="margin:10px 0 0">오늘 모든 것을 해결하지 않아도 괜찮아. 기록하는 것만으로도 내 마음을 살피는 시간이 될 수 있어.</p></section>
+</aside></div><footer>오늘의 마음 · 작은 기록이 쌓여 나를 이해하는 시간이 되기를</footer>
+</main><div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script>
+"use strict";
+const MOODS=[["😊","행복"],["😌","평온"],["🥱","피곤"],["😟","불안"],["😔","우울"],["😵‍💫","복잡"],["😤","짜증"],["🥺","아쉬움"],["😶","그저 그럼"],["🥳","뿌듯"],["🌀","생각 과다"],["🔀","싱숭생숭"],["🤦","과부하"],["🌫️","번아웃"],["🤼","내적 갈등"],["🫨","혼란"],["🌱","기대"]];
+const QUESTIONS=[
+["감정","지금 내 마음을 가장 잘 표현하는 단어는 무엇인가요?"],["감정","오늘 어떤 순간에 마음이 편안해졌나요?"],["감정","오늘 나를 힘들게 한 일이 있다면 무엇이었나요?"],["감정","지금의 감정이 나에게 알려주려는 것은 무엇일까요?"],["돌봄","오늘 내가 나를 위해 해준 작은 일은 무엇인가요?"],["돌봄","지금 나에게 가장 필요한 것은 휴식, 응원, 정리 중 무엇인가요?"],["성장","오늘 새롭게 알게 된 나의 모습은 무엇인가요?"],["성장","완벽하지 않아도 내가 해낸 일 한 가지는 무엇인가요?"],["관계","오늘 고마웠던 사람이나 말이 있었나요?"],["관계","누군가에게 말하지 못한 마음이 있다면 무엇인가요?"],["공부","오늘 공부에서 잘한 점 한 가지는 무엇인가요?"],["공부","공부가 막혔을 때 나에게 어떤 도움이 필요했나요?"],["공부","내일의 내가 조금 더 편해지도록 지금 할 수 있는 일은 무엇인가요?"],["생각","오늘 계속 떠올랐던 생각은 무엇이었나요?"],["생각","그 생각을 조금 다정하게 바라본다면 어떻게 말할 수 있을까요?"],["하루","오늘 기억하고 싶은 작은 순간은 무엇인가요?"],["하루","오늘 내려놓아도 괜찮은 걱정은 무엇인가요?"],["미래","내일의 나에게 짧은 응원 한마디를 남긴다면?"],["미래","앞으로 일주일 동안 나를 위해 해보고 싶은 작은 일은 무엇인가요?"],["자유","오늘의 나를 한 문장으로 표현한다면?"]];
+const PREFIX="emotion-diary-entry-v2-", $=id=>document.getElementById(id);
+let moods=[],question=null,timer=null,toastTimer=null,monthView=new Date();
+function dateStr(d=new Date()){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`}
+function key(date){return PREFIX+date}
+function read(date){try{return JSON.parse(localStorage.getItem(key(date))||"null")}catch(e){return null}}
+function entries(){let a=[];try{for(let i=0;i<localStorage.length;i++){let k=localStorage.key(i);if(k&&k.startsWith(PREFIX)){let e=read(k.slice(PREFIX.length));if(e)a.push(e)}}}catch(e){}return a.sort((a,b)=>b.date.localeCompare(a.date))}
+function formData(){return {date:$("journalDate").value,moods:[...moods],content:$("journalContent").value,study:$("studyContent").value,question,answer:$("questionAnswer").value,updatedAt:new Date().toISOString()}}
+function renderMoods(){let grid=$("moodGrid");grid.replaceChildren();MOODS.forEach(([emoji,label])=>{let b=document.createElement("button");b.type="button";b.className="mood";b.setAttribute("aria-pressed",String(moods.includes(label)));b.textContent=emoji+" "+label;b.onclick=()=>{moods=moods.includes(label)?moods.filter(x=>x!==label):[...moods,label];renderMoods();queueSave()};grid.appendChild(b)})}
+function displayQuestion(q){question=q||null;$("questionCategory").textContent=q?q.category:"마음 돌아보기";$("questionText").textContent=q?q.text:"질문을 뽑아 오늘의 마음을 천천히 살펴보세요."}
+function drawQuestion(){let pool=QUESTIONS.filter(q=>!question||q[1]!==question.text);if(!pool.length)pool=QUESTIONS;let q=pool[Math.floor(Math.random()*pool.length)];displayQuestion({category:q[0],text:q[1]});$("questionAnswer").value="";queueSave()}
+function countChars(){$("charCount").textContent=$("journalContent").value.length.toLocaleString("ko-KR")+"자"}
+function load(date){clearTimeout(timer);let e=read(date);moods=e&&Array.isArray(e.moods)?e.moods:[];$("journalContent").value=e?.content||"";$("studyContent").value=e?.study||"";$("questionAnswer").value=e?.answer||"";displayQuestion(e?.question||null);renderMoods();countChars();$("status").textContent=e?"저장된 기록을 불러왔어요.":"아직 기록이 없어요. 새롭게 적어보세요.";monthView=new Date(date+"T12:00:00");renderCalendar();search()}
+function save(show=true){let date=$("journalDate").value;if(!date)return;let e=formData(),has=e.moods.length||e.content.trim()||e.study.trim()||e.answer.trim()||e.question;try{if(has)localStorage.setItem(key(date),JSON.stringify(e));else localStorage.removeItem(key(date));if(window.diaryCloudSave)window.diaryCloudSave(date,has?e:null);$("status").textContent="저장됨 · "+new Date().toLocaleTimeString("ko-KR",{hour:"2-digit",minute:"2-digit"});renderCalendar();search();if(show)toast("이 날짜의 기록을 저장했어요.")}catch(err){$("status").textContent="저장하지 못했어요. 저장 공간 또는 연결을 확인해 주세요.";toast("저장에 실패했어요.")}}
+function queueSave(){countChars();$("status").textContent="변경 내용 저장 중…";clearTimeout(timer);timer=setTimeout(()=>save(false),650)}
+function toast(msg){$("toast").textContent=msg;$("toast").classList.add("show");clearTimeout(toastTimer);toastTimer=setTimeout(()=>$("toast").classList.remove("show"),2300)}
+function renderCalendar(){let y=monthView.getFullYear(),m=monthView.getMonth(),cal=$("calendar");$("monthTitle").textContent=`${y}년 ${m+1}월`;cal.querySelectorAll(".day").forEach(n=>n.remove());let offset=new Date(y,m,1).getDay(),last=new Date(y,m+1,0).getDate(),today=dateStr();for(let i=0;i<offset;i++){let d=document.createElement("div");d.className="day empty";cal.appendChild(d)}for(let n=1;n<=last;n++){let date=`${y}-${String(m+1).padStart(2,"0")}-${String(n).padStart(2,"0")}`,b=document.createElement("button");b.type="button";b.className="day";b.textContent=n;if(date===today)b.classList.add("today");if(date===$("journalDate").value)b.classList.add("selected");if(read(date))b.classList.add("entry");b.setAttribute("aria-label",date);b.onclick=()=>{if(date!==$("journalDate").value){save(false);$("journalDate").value=date;load(date)}};cal.appendChild(b)}}
+function search(){let q=$("searchInput").value.trim().toLocaleLowerCase("ko-KR"),box=$("searchResults");box.replaceChildren();if(!q){let p=document.createElement("div");p.className="muted";p.textContent="검색어를 입력하면 저장된 기록을 찾아줘요.";box.appendChild(p);return}let matches=entries().filter(e=>[e.date,...(e.moods||[]),e.content||"",e.study||"",e.answer||"",e.question?.text||"",e.question?.category||""].join(" ").toLocaleLowerCase("ko-KR").includes(q)).slice(0,20);if(!matches.length){let p=document.createElement("div");p.className="muted";p.textContent="일치하는 기록이 없어요.";box.appendChild(p);return}matches.forEach(e=>{let b=document.createElement("button");b.className="result";b.type="button";let strong=document.createElement("strong"),span=document.createElement("span");strong.textContent=e.date+" · "+((e.moods||[]).join(", ")||"감정 미선택");span.textContent=([e.content,e.study,e.answer].filter(Boolean).join(" / ")||(e.question?.text||"내용 없음")).slice(0,100);b.append(strong,span);b.onclick=()=>{$("journalDate").value=e.date;load(e.date);window.scrollTo({top:0,behavior:"smooth"})};box.appendChild(b)})}
+function deleteEntry(){let date=$("journalDate").value;if(!read(date)){toast("이 날짜에 저장된 기록이 없어요.");return}if(confirm(date+"의 일기를 삭제할까요? 삭제한 기록은 복구할 수 없어요.")){localStorage.removeItem(key(date));if(window.diaryCloudSave)window.diaryCloudSave(date,null);load(date);toast("기록을 삭제했어요.")}}
+function exportBackup(){save(false);let blob=new Blob([JSON.stringify({app:"emotion-diary",version:2,exportedAt:new Date().toISOString(),entries:entries()},null,2)],{type:"application/json"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="emotion-diary-backup-"+dateStr()+".json";a.click();URL.revokeObjectURL(url);toast("백업 파일을 만들었어요.")}
+async function importBackup(file){if(!file)return;try{let parsed=JSON.parse(await file.text()),list=Array.isArray(parsed)?parsed:parsed.entries;if(!Array.isArray(list))throw Error();let valid=list.filter(e=>e&&/^\d{4}-\d{2}-\d{2}$/.test(e.date));if(!valid.length)throw Error();if(!confirm(valid.length+"개의 기록을 불러올까요? 같은 날짜의 기록은 덮어써져요."))return;valid.forEach(e=>{let normalized={date:e.date,moods:Array.isArray(e.moods)?e.moods:[],content:typeof e.content==="string"?e.content:"",study:typeof e.study==="string"?e.study:"",question:e.question&&typeof e.question.text==="string"?e.question:null,answer:typeof e.answer==="string"?e.answer:"",updatedAt:e.updatedAt||new Date().toISOString()};localStorage.setItem(key(e.date),JSON.stringify(normalized));if(window.diaryCloudSave)window.diaryCloudSave(e.date,normalized)});load($("journalDate").value);toast(valid.length+"개의 기록을 불러왔어요.")}catch(e){toast("백업 파일을 읽지 못했어요. 올바른 JSON 파일인지 확인해 주세요.")}finally{$("importFile").value=""}}
+$("journalDate").value=dateStr();monthView=new Date();renderMoods();load($("journalDate").value);
+$("todayBtn").onclick=()=>{$("journalDate").value=dateStr();load($("journalDate").value)};
+$("clearBtn").onclick=()=>{if(!confirm("현재 화면의 입력 내용을 비울까요? 저장된 기록은 삭제되지 않아요."))return;moods=[];$("journalContent").value="";$("studyContent").value="";$("questionAnswer").value="";displayQuestion(null);renderMoods();countChars();queueSave()};
+$("journalDate").onchange=()=>load($("journalDate").value);
+$("resetMoodsBtn").onclick=()=>{moods=[];renderMoods();queueSave()};
+["journalContent","studyContent","questionAnswer"].forEach(id=>$(id).addEventListener("input",queueSave));
+$("drawBtn").onclick=drawQuestion;$("saveBtn").onclick=()=>save(true);$("deleteBtn").onclick=deleteEntry;
+$("prevMonth").onclick=()=>{monthView=new Date(monthView.getFullYear(),monthView.getMonth()-1,1);renderCalendar()};
+$("nextMonth").onclick=()=>{monthView=new Date(monthView.getFullYear(),monthView.getMonth()+1,1);renderCalendar()};
+$("searchInput").oninput=search;$("exportBtn").onclick=exportBackup;$("importFile").onchange=e=>importBackup(e.target.files[0]);
+window.addEventListener("beforeunload",()=>{clearTimeout(timer);save(false)});
+</script>
 
-    <section class="card">
-      <h2>오늘 나는 어떤 기분인가요?</h2>
-      <div class="moods">
-        <button class="mood" data-mood="좋음">😊 좋음</button>
-        <button class="mood" data-mood="평온">😌 평온</button>
-        <button class="mood" data-mood="불안">😟 불안</button>
-        <button class="mood" data-mood="우울">😔 우울</button>
-        <button class="mood" data-mood="복잡함">😵‍💫 복잡함</button>
-      </div>
-    </section>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+import { getFirestore, doc, getDoc, setDoc, deleteDoc, collection, getDocs, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+const firebaseConfig={apiKey:"AIzaSyBnFbg8DQS4MOc6Px-SJfqG0XBYzmczgJg",authDomain:"to-do-list-c4730.firebaseapp.com",databaseURL:"https://to-do-list-c4730-default-rtdb.firebaseio.com",projectId:"to-do-list-c4730",storageBucket:"to-do-list-c4730.firebasestorage.app",messagingSenderId:"678451446941",appId:"1:678451446941:web:420f2c161e0f4d7438c074"};
+const $=id=>document.getElementById(id);let auth,store,uid=null,diaryUnsub=null,todoUnsub=null,saveChain=Promise.resolve(),syncReady=false;
+function status(s){$('cloudStatus').textContent=s}
+function showAuth(show){$('authCard').style.display=show?'block':'none';$('diaryMain').style.display=show?'none':'block';$('logoutBtn').hidden=show}
+function errorMessage(e){const map={'auth/invalid-credential':'이메일 또는 비밀번호를 확인해 주세요.','auth/email-already-in-use':'이미 가입된 이메일이에요. 로그인해 주세요.','auth/weak-password':'비밀번호는 6자 이상이어야 해요.','auth/invalid-email':'이메일 형식을 확인해 주세요.','auth/operation-not-allowed':'Firebase에서 이메일/비밀번호 로그인을 켜야 해요.','permission-denied':'Firestore 보안 규칙에서 본인 계정 접근을 허용해야 해요.'};return map[e?.code]||('오류: '+(e?.message||e?.code||'알 수 없는 오류'))}
+function getLocalEntries(){return entries()}
+function renderTodo(data){const box=$('todoList');box.replaceChildren();const date=$('journalDate').value;const tasks=Array.isArray(data?.days?.[date])?data.days[date]:[];const filled=tasks.filter(t=>t&&String(t.text||'').trim());if(!filled.length){const p=document.createElement('div');p.className='muted';p.textContent='이 날짜에 등록된 할 일이 없어요.';box.appendChild(p);return}filled.forEach(t=>{const row=document.createElement('div');row.className='result';const title=document.createElement('strong');title.textContent=(t.done?'☑ ':'□ ')+t.text;const sub=document.createElement('span');const subs=Array.isArray(t.subtasks)?t.subtasks.filter(x=>String(x.text||'').trim()):[];sub.textContent=subs.length?subs.map(x=>(x.done?'✓ ':'· ')+x.text).join('  /  '):(t.due?'날짜: '+t.due:'');row.append(title,sub);box.appendChild(row)})}
+let latestTodo={days:{}};
+$('journalDate').addEventListener('change',()=>renderTodo(latestTodo));
+$('todayBtn').addEventListener('click',()=>setTimeout(()=>renderTodo(latestTodo),0));
+$('prevMonth').addEventListener('click',()=>{});$('nextMonth').addEventListener('click',()=>{});
+window.diaryCloudSave=(date,entry)=>{if(!syncReady||!uid)return;const userId=uid;saveChain=saveChain.catch(()=>{}).then(async()=>{if(uid!==userId)return;const ref=doc(store,'users',userId,'diaryEntries',date);if(entry)await setDoc(ref,{...entry,updatedAt:serverTimestamp()});else await deleteDoc(ref);if(uid===userId)status('☁️ 클라우드 저장 완료')}).catch(e=>{console.error(e);if(uid===userId)status('저장 실패 · 인터넷/Firestore 규칙 확인')})};
+async function start(user){uid=user.uid;syncReady=false;showAuth(false);status('☁️ 기록 불러오는 중…');if(diaryUnsub)diaryUnsub();if(todoUnsub)todoUnsub();try{
+ const diaryCol=collection(store,'users',uid,'diaryEntries');const existing=await getDocs(diaryCol);if(uid!==user.uid)return;
+ {const remoteDates=new Set(existing.docs.map(d=>d.id));const local=getLocalEntries();for(const e of local){if(e?.date&&!remoteDates.has(e.date))await setDoc(doc(store,'users',uid,'diaryEntries',e.date),e)} }
+ if(uid!==user.uid)return;
+ diaryUnsub=onSnapshot(diaryCol,snap=>{if(uid!==user.uid)return;const cloudDates=new Set();snap.forEach(d=>{const e=d.data();if(e.date){cloudDates.add(e.date);localStorage.setItem(key(e.date),JSON.stringify({...e,updatedAt:e.updatedAt?.toDate?e.updatedAt.toDate().toISOString():e.updatedAt||new Date().toISOString()}))}});for(const e of getLocalEntries()){if(!cloudDates.has(e.date))localStorage.removeItem(key(e.date))}if($('journalDate').value){load($('journalDate').value)}syncReady=true;status('☁️ 감정 일기 실시간 동기화 중')},e=>{console.error(e);status('감정 일기 동기화 오류')});
+ const todoRef=doc(store,'users',uid,'todo','main');todoUnsub=onSnapshot(todoRef,snap=>{latestTodo=snap.exists()?(snap.data().data||{days:{}}):{days:{}};renderTodo(latestTodo);$('todoSyncStatus').textContent='TO-DO 연결됨';},e=>{$('todoSyncStatus').textContent='TO-DO 연결 오류';console.error(e)});
+ }catch(e){console.error(e);status('클라우드 연결 실패');$('authError').textContent=errorMessage(e);showAuth(true)}}
+function stop(){uid=null;syncReady=false;if(diaryUnsub)diaryUnsub();if(todoUnsub)todoUnsub();diaryUnsub=todoUnsub=null;latestTodo={days:{}};renderTodo(latestTodo);status('로그인 필요');showAuth(true)}
+async function authAction(register){$('authError').textContent='';const email=$('authEmail').value.trim(),password=$('authPassword').value;if(!email||!password){$('authError').textContent='이메일과 비밀번호를 입력해 주세요.';return}try{if(register)await createUserWithEmailAndPassword(auth,email,password);else await signInWithEmailAndPassword(auth,email,password)}catch(e){$('authError').textContent=errorMessage(e)}}
+$('loginBtn').onclick=()=>authAction(false);$('registerBtn').onclick=()=>authAction(true);$('authPassword').onkeydown=e=>{if(e.key==='Enter')authAction(false)};$('logoutBtn').onclick=()=>signOut(auth);
+try{const app=initializeApp(firebaseConfig);auth=getAuth(app);store=getFirestore(app);await setPersistence(auth,browserLocalPersistence);onAuthStateChanged(auth,user=>{if(user)start(user);else stop()})}catch(e){console.error(e);showAuth(true);status('Firebase 설정 확인 필요');$('authError').textContent=errorMessage(e)}
+</script>
 
-    <section class="card">
-      <h2>지금 내 마음을 적어봐요</h2>
-      <textarea id="diary" placeholder="오늘 있었던 일, 공부하면서 든 생각, 말하지 못했던 마음까지 자유롭게 적어도 괜찮아요."></textarea>
-      <button class="save" id="save">오늘의 기록 저장하기</button>
-      <p id="message" aria-live="polite"></p>
-    </section>
-
-    <section class="card">
-      <h2>오늘 나에게 해주고 싶은 말</h2>
-      <p class="intro">완벽하지 않아도 괜찮아. 오늘의 나는 오늘만큼 노력했어.</p>
-    </section>
-  </main>
-
-  <script>
-    const today = new Date();
-    const dateKey = [
-      today.getFullYear(),
-      String(today.getMonth() + 1).padStart(2, "0"),
-      String(today.getDate()).padStart(2, "0")
-    ].join("-");
-
-    document.getElementById("today").textContent =
-      today.getFullYear() + "년 " +
-      (today.getMonth() + 1) + "월 " +
-      today.getDate() + "일";
-
-    let selectedMood = "";
-
-    document.querySelectorAll(".mood").forEach(button => {
-      button.addEventListener("click", () => {
-        selectedMood = button.dataset.mood;
-        document.querySelectorAll(".mood").forEach(item => {
-          item.classList.toggle("selected", item === button);
-        });
-      });
-    });
-
-    const diary = document.getElementById("diary");
-    const message = document.getElementById("message");
-    const storageKey = "emotion-diary-" + dateKey;
-
-    try {
-      const saved = JSON.parse(localStorage.getItem(storageKey) || "{}");
-      diary.value = saved.text || "";
-      selectedMood = saved.mood || "";
-      document.querySelectorAll(".mood").forEach(button => {
-        button.classList.toggle(
-          "selected", button.dataset.mood === selectedMood
-        );
-      });
-    } catch (error) {
-      message.textContent = "기존 기록을 불러오지 못했어요.";
-    }
-
-    document.getElementById("save").addEventListener("click", () => {
-      try {
-        localStorage.setItem(storageKey, JSON.stringify({
-          text: diary.value,
-          mood: selectedMood,
-          updatedAt: new Date().toISOString()
-        }));
-        message.textContent = "오늘의 기록을 이 브라우저에 저장했어요.";
-      } catch (error) {
-        message.textContent = "저장하지 못했어요. 브라우저 설정을 확인해 주세요.";
-      }
-    });
-  </script>
 </body>
 </html>
